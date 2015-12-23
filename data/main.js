@@ -23,16 +23,16 @@ var sortArray=function(arr,prop)
   arr.sort(function (a, b) {
     aVal=parseFloat(a[prop]);
     bVal=parseFloat(b[prop]);
-  if (parseFloat(aVal) < bVal) {
-    return 1;
-  }
-  if (aVal > bVal) {
-    return -1;
-  }
-  // a must be equal to b
-  return 0;
-});
-return arr;
+    if (parseFloat(aVal) < bVal) {
+      return 1;
+    }
+    if (aVal > bVal) {
+      return -1;
+    }
+    // a must be equal to b
+    return 0;
+  });
+  return arr;
 }
 
 // checks for NA values and truns them to 0
@@ -125,7 +125,7 @@ var createJsonForFirstAssignment=function()
         name=fetchCropName(rawArr[0]);
         oilseed.push(new populateSingleObj(name,checkForNA(rawArr[24])));
       }
-  }
+    }
     else   if (checkForKeywords(true,"Commercial",line))
     {
       rawArr=line.split(",");
@@ -145,32 +145,32 @@ var createJsonForFirstAssignment=function()
       {
         state=fullName[5];
 
-        }
-        else if(fullName.length>6)
+      }
+      else if(fullName.length>6)
+      {
+
+        state=fullName[5]+" "+fullName[6];
+      }
+      if(southStates.indexOf(state)>=0)
+      {
+
+        // console.log(state);
+        for (i=4;i<rawArr.length;i++)
         {
-
-          state=fullName[5]+" "+fullName[6];
-        }
-          if(southStates.indexOf(state)>=0)
+          // areaWise[headers[i-1]]=areaWise[headers[i-1]]||{};
+          // areaWise[headers[i-1]][state]=parseFloat(areaWise[headers[i-1]][state]||0)+parseFloat(checkForNA(rawArr[i]));
+          //  areaWise.push(new populateSingleObjAreaWise(headers[i-1],state,checkForNA(rawArr[i])));
+          if(checkForNA(rawArr[i])!=0)
           {
-
-            // console.log(state);
-            for (i=4;i<rawArr.length;i++)
-            {
-              // areaWise[headers[i-1]]=areaWise[headers[i-1]]||{};
-              // areaWise[headers[i-1]][state]=parseFloat(areaWise[headers[i-1]][state]||0)+parseFloat(checkForNA(rawArr[i]));
-              //  areaWise.push(new populateSingleObjAreaWise(headers[i-1],state,checkForNA(rawArr[i])));
-              if(checkForNA(rawArr[i])!=0)
-              {
-              year=headers[i-1];
-              arr=areaWise[i-4];
-              arr=arr||{year:year.substring(year.indexOf("-")+1)};
-              arr[state]=parseFloat(checkForNA(rawArr[i]));
-              areaWise[i-4]=arr;
-              }
-           }
-
+            year=headers[i-1];
+            arr=areaWise[i-4];
+            arr=arr||{year:year.substring(year.indexOf("-")+1)};
+            arr[state]=parseFloat(checkForNA(rawArr[i]));
+            areaWise[i-4]=arr;
           }
+        }
+
+      }
 
 
 
@@ -178,32 +178,32 @@ var createJsonForFirstAssignment=function()
     }
 
 
-  if (err) {
-    throw err;
-  }
-  else {
+    if (err) {
+      throw err;
+    }
+    else {
 
-  }
-});
+    }
+  });
 
-lineReader.on('close', function () {
-  finalObj={};
-  finalObj.foodgrain=sortArray(foodgrain,"prod");
-  finalObj.oilseed=sortArray(oilseed,"prod");
-  myKey=Object.keys(commercial);
-  tempObj=[];
-  for(i=0;i<myKey.length;i++)
-  {
-    tempObj.push({name:myKey[i],data:commercial[myKey[i]]});
-  }
-  finalObj.commercial=tempObj;
+  lineReader.on('close', function () {
+    finalObj={};
+    finalObj.foodgrain=sortArray(foodgrain,"prod");
+    finalObj.oilseed=sortArray(oilseed,"prod");
+    myKey=Object.keys(commercial);
+    tempObj=[];
+    for(i=0;i<myKey.length;i++)
+    {
+      tempObj.push({name:myKey[i],data:commercial[myKey[i]]});
+    }
+    finalObj.commercial=tempObj;
 
-  areaWise.clean(null);
-  areaWise.clean(undefined);
-  finalObj.areaWise=areaWise;
-  fs.writeFile(targetFile1,JSON.stringify(finalObj));
+    areaWise.clean(null);
+    areaWise.clean(undefined);
+    finalObj.areaWise=areaWise;
+    fs.writeFile(targetFile1,JSON.stringify(finalObj));
 
-});
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
